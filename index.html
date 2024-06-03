@@ -1,116 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>QR Code Generator</title>
-    <!-- tags for patent of websitere -->
-    <meta name="description" content="QR Code Generator" />
-    <meta name="keywords" content="QR Code, Generator, QR Code Generator" />
-    <meta name="author" content="Devraj" />
-  </head>
-  <body>
-    <div class="container">
-      <h1>QR Code Generator</h1>
-      <input type="text" id="inputText" placeholder="Enter text or URL" />
-      <div id="qrcode">
-        <img src="" alt="" id="qrImg" />
-      </div>
-      <!--option for downloading the qr-->
-      <a href="" download="qrcode.png" id="downloadButton">Download QR Code</a>
-      <button id="generateButton">Generate QR Code</button>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR Code Generator</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="description" content="QR Code Generator" />
+  <meta name="keywords" content="QR Code, Generator, QR Code Generator" />
+  <meta name="author" content="Devraj" />
+  <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+  <style>
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>QR Code Generator</h1>
+    <input type="text" id="inputText" placeholder="Enter text or URL" />
+    <div id="qrcode">
+      <img src="" alt="" id="qrImg" />
     </div>
-    <footer>
-      <p>
-        Developed by
-        <a href="https://www.linkedin.com/in/devraj-kumar-7b7b3b1b2/">Devraj</a>
-      </p>
-    </footer>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-        background-color: #f4f4f9;
-      }
+    <a href="#" download="qrcode.png" id="downloadButton">Download QR Code</a>
+    <button id="generateButton">Generate QR Code</button>
+    <br>
+    <button id="scanQr">Scan Your QR Code Here</button>
+    <input type="file" id="fileInput" accept="image/*" style="display:none;">
+    <video id="video" style="display:none;" width="300" height="300"></video>
+    <canvas id="canvas" style="display:none;"></canvas>
+  </div>
+  <footer>
+    <p>
+      Developed by
+      <a href="https://www.linkedin.com/in/devraj-freelancer/">Devraj &hearts;</a>
+      </br>
+      Distributed by
+      <a href="https://iamdevraj.me">Code with Dev</a>
+    </p>
+    <p class="copyright">
+      &copy; 2024 All Rights Reserved | <a href="https://iamdevraj.me">Code with Dev</a>
+    </p>
+  </footer>
 
-      .container {
-        text-align: center;
-        background: #fff;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      }
+  <!-- Modal -->
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <p id="qrResultText"></p>
+      <a id="qrResultLink" href="#" target="_blank">Go to Link</a>
+    </div>
+  </div>
 
-      h1 {
-        margin-bottom: 20px;
-        color: #333;
-      }
+  <!-- Choice Modal -->
+  <div id="choiceModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <p>How would you like to scan your QR Code?</p>
+      <div class="modal-buttons">
+        <button id="useCameraButton" class="modal-button">Use Camera</button>
+        <button id="uploadFileButton" class="modal-button">Upload File</button>
+      </div>
+    </div>
+  </div>
 
-      input {
-        padding: 10px;
-        width: calc(100% - 22px);
-        margin-bottom: 20px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-      }
+  <script>
+    const generateButton = document.getElementById("generateButton");
+    const inputText = document.getElementById("inputText");
+    const qrImg = document.getElementById("qrImg");
+    const downloadButton = document.getElementById("downloadButton");
+    const scanQr = document.getElementById("scanQr");
+    const fileInput = document.getElementById("fileInput");
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const canvasContext = canvas.getContext("2d");
+    const modal = document.getElementById("myModal");
+    const choiceModal = document.getElementById("choiceModal");
+    const span = document.getElementsByClassName("close");
+    const qrResultText = document.getElementById("qrResultText");
+    const qrResultLink = document.getElementById("qrResultLink");
+    const useCameraButton = document.getElementById("useCameraButton");
+    const uploadFileButton = document.getElementById("uploadFileButton");
 
-      button {
-        padding: 10px 20px;
-        border: none;
-        background-color: #28a745;
-        color: white;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
+    downloadButton.addEventListener("click", (event) => {
+      if (!qrImg.src) {
+        event.preventDefault();
+        alert("Please generate QR Code first!");
       }
+    });
 
-      button:hover {
-        background-color: #218838;
-      }
-      a{
-        padding: 10px 20px;
-        border: none;
-        background-color: #28a745;
-        color: white;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-        text-decoration: none;
-      }
+    generateButton.addEventListener("click", () => {
+      const text = inputText.value;
+      const qrCode = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${text}`;
 
-      #qrcode {
-        margin-top: 20px;
-      }
-      footer {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background-color: #333;
-        color: white;
-        text-align: center;
-        padding: 10px 0;
-      }
+      fetch(qrCode)
+        .then(response => response.blob())
+        .then(blob => {
+          const url = URL.createObjectURL(blob);
+          qrImg.src = url;
+          downloadButton.href = url;
+          downloadButton.download = "qrcode.png";
+        });
+    });
 
-      footer a {
-        color: white;
-        text-decoration: none;
-      }
-    </style>
-    <script>
-      const generateButton = document.getElementById("generateButton");
-      const inputText = document.getElementById("inputText");
-      const qrImg = document.getElementById("qrImg");
+    scanQr.addEventListener("click", () => {
+      choiceModal.style.display = "block";
+    });
 
-      generateButton.addEventListener("click", () => {
-        const text = inputText.value;
-        const qrCode = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${text}`;
-        qrImg.src = qrCode;
-      });
-    </script>
-  </body>
+    useCameraButton.addEventListener("click", () => {
+      choiceModal.style.display = "none";
+      startCameraScan();
+    });
+
+    uploadFileButton.addEventListener("click", () => {
+      choiceModal.style.display = "none";
+      fileInput.click();
+    });
+
+    fileInput.addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          canvas.width = img.width;
+          canvas.height = img.height;
+          canvasContext.drawImage(img, 0, 0, img.width, img.height);
+          const imageData = canvasContext.getImageData(0, 0, img.width, img.height);
+          const qrCode = jsQR(imageData.data, imageData.width, imageData.height);
+          if (qrCode) {
+            showModal(qrCode.data);
+          } else {
+            alert("No QR Code found.");
+          }
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function startCameraScan() {
+      video.style.display = "block";
+      canvas.style.display = "none";
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+        .then(stream => {
+          video.srcObject = stream;
+          video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
+          video.play();
+          requestAnimationFrame(scanQRCode);
+        });
+    }
+
+    function scanQRCode() {
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvasContext.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = canvasContext.getImageData(0, 0, canvas.width, canvas.height);
+        const qrCode = jsQR(imageData.data, imageData.width, imageData.height);
+        if (qrCode) {
+          showModal(qrCode.data);
+          stopCamera();
+          return;
+        }
+      }
+      requestAnimationFrame(scanQRCode);
+    }
+
+    function stopCamera() {
+      video.srcObject.getTracks().forEach(track => track.stop());
+      video.style.display = "none";
+    }
+
+    function showModal(data) {
+      qrResultText.textContent = "QR Code Data: " + data;
+      qrResultLink.href = data;
+      qrResultLink.textContent = "Go to Link";
+      modal.style.display = "block";
+    }
+
+    span[0].onclick = function () {
+      modal.style.display = "none";
+    }
+
+    span[1].onclick = function () {
+      choiceModal.style.display = "none";
+    }
+
+    window.onclick = function (event) {
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+      if (event.target === choiceModal) {
+        choiceModal.style.display = "none";
+      }
+    }
+  </script>
+</body>
+
 </html>
