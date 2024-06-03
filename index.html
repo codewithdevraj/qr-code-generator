@@ -1,118 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>QR Code Generator</title>
-    <!-- tags for patent of websitere -->
-    <meta name="description" content="QR Code Generator" />
-    <meta name="keywords" content="QR Code, Generator, QR Code Generator" />
-    <meta name="author" content="Devraj" />
-  </head>
-  <body>
-    <div class="container">
-      <h1>QR Code Generator</h1>
-      <input type="text" id="inputText" placeholder="Enter text or URL" />
-      <div id="qrcode">
-        <img src="" alt="" id="qrImg" />
-      </div>
-      <!--option for downloading the qr-->
-      <a href="#" download="qrcode.png" id="downloadButton">Download QR Code</a>
-      <button id="generateButton">Generate QR Code</button>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR Code Generator</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="description" content="QR Code Generator" />
+  <meta name="keywords" content="QR Code, Generator, QR Code Generator" />
+  <meta name="author" content="Devraj" />
+</head>
+
+<body>
+  <div class="container">
+    <h1>QR Code Generator</h1>
+    <input type="text" id="inputText" placeholder="Enter text or URL" />
+    <div id="qrcode">
+      <img src="" alt="" id="qrImg" />
     </div>
-    <footer>
-      <p>
-        Developed by
-        <a href="https://www.linkedin.com/in/devraj-kumar-7b7b3b1b2/">Devraj</a>
-      </p>
-    </footer>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-        background-color: #f4f4f9;
-      }
+    <a href="#" download="qrcode.png" id="downloadButton">Download QR Code</a>
+    <button id="generateButton">Generate QR Code</button>
+  </div>
+  <footer>
+    <p>
+      Developed by
+      <a href="https://www.linkedin.com/in/devraj-freelancer/">Devraj &hearts;</a>
+      </br>
+      Distributed by
+      <a href="https://iamdevraj.me">Code with Dev</a>
+    </p>
+    <p class="copyright">
+      &copy; 2024 All Rights Reserved | <a href="https://iamdevraj.me">Code with Dev</a>
+    </p>
+  </footer>
 
-      .container {
-        text-align: center;
-        background: #fff;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      }
+  <script>
+    const generateButton = document.getElementById("generateButton");
+    const inputText = document.getElementById("inputText");
+    const qrImg = document.getElementById("qrImg");
+    const downloadButton = document.getElementById("downloadButton");
 
-      h1 {
-        margin-bottom: 20px;
-        color: #333;
-      }
+    generateButton.addEventListener("click", () => {
+      const text = inputText.value;
+      const qrCode = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${text}`;
 
-      input {
-        padding: 10px;
-        width: calc(100% - 22px);
-        margin-bottom: 20px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-      }
+      fetch(qrCode)
+        .then(response => response.blob())
+        .then(blob => {
+          const url = URL.createObjectURL(blob);
+          qrImg.src = url;
+          downloadButton.href = url;
+          downloadButton.download = "qrcode.png";
+        });
+    });
+  </script>
+</body>
 
-      button {
-        padding: 10px 20px;
-        border: none;
-        background-color: #28a745;
-        color: white;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-      }
-
-      button:hover {
-        background-color: #218838;
-      }
-      a {
-        padding: 10px 20px;
-        border: none;
-        background-color: #28a745;
-        color: white;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-        text-decoration: none;
-      }
-
-      #qrcode {
-        margin-top: 20px;
-      }
-      footer {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background-color: #333;
-        color: white;
-        text-align: center;
-        padding: 10px 0;
-      }
-
-      footer a {
-        color: white;
-        text-decoration: none;
-      }
-    </style>
-    <script>
-      const generateButton = document.getElementById("generateButton");
-      const inputText = document.getElementById("inputText");
-      const qrImg = document.getElementById("qrImg");
-      const downloadButton = document.getElementById("downloadButton");
-
-      generateButton.addEventListener("click", () => {
-        const text = inputText.value;
-        const qrCode = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${text}`;
-        qrImg.src = qrCode;
-        downloadButton.href = qrImg.src;
-      });
-    </script>
-  </body>
 </html>
