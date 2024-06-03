@@ -17,7 +17,7 @@
         <img src="" alt="" id="qrImg" />
       </div>
       <!--option for downloading the qr-->
-      <a href="" download="qrcode.png" id="downloadButton">Download QR Code</a>
+      <a href="#" download="qrcode.png" id="downloadButton">Download QR Code</a>
       <button id="generateButton">Generate QR Code</button>
     </div>
     <footer>
@@ -71,7 +71,7 @@
       button:hover {
         background-color: #218838;
       }
-      a{
+      a {
         padding: 10px 20px;
         border: none;
         background-color: #28a745;
@@ -105,11 +105,13 @@
       const generateButton = document.getElementById("generateButton");
       const inputText = document.getElementById("inputText");
       const qrImg = document.getElementById("qrImg");
+      const downloadButton = document.getElementById("downloadButton");
 
       generateButton.addEventListener("click", () => {
         const text = inputText.value;
         const qrCode = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${text}`;
         qrImg.src = qrCode;
+        downloadButton.href = qrImg.src;
       });
     </script>
   </body>
